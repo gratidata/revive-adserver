@@ -1,0 +1,7 @@
+.git
+.github
+var/cache
+var/plugins
+var/templates_compiled
+tests/results
+*.log
