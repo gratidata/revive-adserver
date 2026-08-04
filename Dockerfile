@@ -31,9 +31,13 @@ WORKDIR /var/www/html
 COPY . /var/www/html
 
 RUN composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader \
-    && mkdir -p /var/www/html/var /var/www/html/plugins /var/www/html/www/admin/plugins /var/www/html/www/images \
+    && mkdir -p /var/www/html/var /var/www/html/var/cache /var/www/html/var/plugins /var/www/html/var/templates_compiled /var/www/html/plugins /var/www/html/www/admin/plugins /var/www/html/www/images \
     && chown -R www-data:www-data /var/www/html/var /var/www/html/plugins /var/www/html/www/admin/plugins /var/www/html/www/images
+
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 80
 
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["apache2-foreground"]
