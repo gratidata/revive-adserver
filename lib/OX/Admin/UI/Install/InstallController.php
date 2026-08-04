@@ -76,8 +76,12 @@ class OX_Admin_UI_Install_InstallController extends OX_Admin_UI_Controller_BaseC
         $oRequest = $this->getRequest();
         $action = $oRequest->getParam('action');
 
-        // No upgrade file? No installer! Unless the user is in the last step
-        if (!file_exists(MAX_PATH . '/var/UPGRADE') && 'finish' != $action) {
+        // Only abort the installer if the application is already installed and there is
+        // no upgrade marker. A fresh install must be allowed to proceed to the wizard.
+        if (defined('OA_INSTALLATION_STATUS')
+            && OA_INSTALLATION_STATUS === OA_INSTALLATION_STATUS_INSTALLED
+            && !file_exists(MAX_PATH . '/var/UPGRADE')
+            && 'finish' != $action) {
             $this->abortInstall();
         }
 

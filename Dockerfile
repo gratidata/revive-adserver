@@ -31,8 +31,8 @@ WORKDIR /var/www/html
 COPY . /var/www/html
 
 RUN composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader \
-    && mkdir -p /var/www/html/var \
-    && chown -R www-data:www-data /var/www/html/var
+    && mkdir -p /var/www/html/var /var/www/html/plugins /var/www/html/www/admin/plugins /var/www/html/www/images \
+    && chown -R www-data:www-data /var/www/html/var /var/www/html/plugins /var/www/html/www/admin/plugins /var/www/html/www/images
 
 EXPOSE 80
 

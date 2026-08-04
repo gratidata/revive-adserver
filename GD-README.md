@@ -44,7 +44,7 @@ docker run -d \
   revive-adserver:latest
 ```
 
-Open `http://localhost:8080/` in your browser and complete the normal Revive Adserver installer. The app will redirect to the installer automatically until installation is complete.
+Open `http://localhost:8080/www/admin/install.php` in your browser and complete the normal Revive Adserver installer. The app will redirect to the installer automatically until installation is complete.
 
 ## Cluster mode
 
