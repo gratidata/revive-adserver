@@ -9,18 +9,16 @@ RUN apt-get update \
         libfreetype6-dev \
         libicu-dev \
         libjpeg62-turbo-dev \
-        libmemcached-dev \
         libonig-dev \
         libpng-dev \
         libssl-dev \
         libxml2-dev \
         libzip-dev \
-        libsasl2-dev \
         zlib1g-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" curl gd intl mbstring mysqli opcache pdo_mysql xml zip \
-    && yes '' | pecl install memcached \
-    && docker-php-ext-enable memcached \
+    && yes '' | pecl install redis \
+    && docker-php-ext-enable redis \
     && a2enmod rewrite headers \
     && rm -rf /var/lib/apt/lists/*
 

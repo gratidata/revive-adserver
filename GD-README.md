@@ -1,6 +1,6 @@
 # Docker deployment for Revive Adserver
 
-This repository can run in a standard Apache/PHP container. The image below uses PHP 8.1, installs the extensions required by the project, and includes the Memcached extension so the delivery cache can be switched to a cluster-safe backend.
+This repository can run in a standard Apache/PHP container. The image below uses PHP 8.1, installs the extensions required by the project, and includes the Redis extension so the delivery cache can be switched to a cluster-safe backend.
 
 ## Build the image
 
@@ -10,7 +10,7 @@ docker build -t revive-adserver:latest .
 
 ## Run the supporting services
 
-Revive Adserver needs a database, and for clustered delivery cache it should also use Memcached instead of the default file cache.
+Revive Adserver needs a database, and for clustered delivery cache it should also use Redis instead of the default file cache.
 
 ```bash
 docker network create revive-net
@@ -26,9 +26,9 @@ docker run -d \
   mariadb:11
 
 docker run -d \
-  --name revive-memcached \
+  --name revive-redis \
   --network revive-net \
-  memcached:1.6-alpine
+  redis:7-alpine
 ```
 
 ## Start Revive Adserver
@@ -50,28 +50,35 @@ Open `http://localhost:8080/www/admin/install.php` in your browser and complete 
 
 For multiple web servers behind a load balancer, use the same image on every node and keep the database shared. Do not rely on the default file delivery cache, because it is node-local.
 
-After installation, switch the delivery cache to the bundled Memcached plugin and point it at the shared Memcached service:
+After installation, install the Redis Caching plugin from https://www.adserverplugins.com/redis-caching-plugin/ and switch the delivery cache to Redis.
+
+Then configure the cache store plugin and Redis connection in your generated configuration file (`var/your-hostname.conf.php`):
 
 ```ini
 [delivery]
-cacheStorePlugin = deliveryCacheStore:oxMemcached:oxMemcached
+cacheStorePlugin = deliveryCacheStore:apRedis:apRedis
 
-[oxMemcached]
-memcachedServers = revive-memcached:11211
-memcachedExpireTime = 3600
+[apRedis]
+host = revive-redis
+port = 6379
+timeout = 1.0
+database = 0
+persistent = 0
+igbinary = 0
+socket =
 ```
 
-If you use more than one Memcached server, separate them with commas:
+If you are using a Unix socket instead of TCP, set `socket` and leave `host`/`port` unused by your environment.
 
 ```ini
-memcachedServers = memcached-a:11211,memcached-b:11211
+socket = /var/run/redis/redis.sock
 ```
 
-The `memcachedExpireTime` value must be greater than the delivery cache expiry value.
+The delivery cache expiry is still controlled by `[delivery] cacheExpire`.
 
 ## Suggested production layout
 
 - One image build shared by all web nodes.
 - One shared database.
-- One shared Memcached cluster for delivery cache.
+- One shared Redis service for delivery cache.
 - A persistent shared `var/` volume, or an equivalent mechanism to keep the generated configuration identical across nodes.
