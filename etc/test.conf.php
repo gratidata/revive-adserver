@@ -130,7 +130,7 @@ video                               = false
 
 [delivery]
 cacheExpire                         = 1200
-cacheStorePlugin              	    = deliveryCacheStore:oxCacheFile:oxCacheFile
+cacheStorePlugin              	    = deliveryCacheStore:apRedis:apRedis
 cachePath                           =
 acls                                = true
 aclsDirectSelection                 = true
@@ -151,6 +151,15 @@ secret                              = secret
 clickUrlValidity                    = 0;    ; Click URL open redirect validity in seconds
 relAttribute                        = noopener nofollow
 relPreconnect                       = false
+
+[apRedis]
+host                                = localhost
+port                                = 6379
+timeout                             = 1.0
+database                            = 0
+persistent                          = 0
+igbinary                            = 0
+socket                              =
 
 [defaultBanner]
 invalidZoneHtmlBanner               =       ; If zone does not exist, show this HTML snipper

@@ -46,6 +46,39 @@ docker run -d \
 
 Open `http://localhost:8080/www/admin/install.php` in your browser and complete the normal Revive Adserver installer. The app will redirect to the installer automatically until installation is complete.
 
+## Configure Redis via docker run --env
+
+The container entrypoint can write Redis cache settings into existing Revive config files in `var/*.conf.php`.
+
+Set these environment variables on the web container:
+
+- `REVIVE_REDIS_HOST` default `revive-redis`.
+- `REVIVE_REDIS_PORT` default `6379`.
+- `REVIVE_REDIS_TIMEOUT` default `1.0`.
+- `REVIVE_REDIS_DATABASE` default `0`.
+- `REVIVE_REDIS_PERSISTENT` default `0`.
+- `REVIVE_REDIS_IGBINARY` default `0`.
+- `REVIVE_REDIS_SOCKET` default empty.
+
+Example:
+
+```bash
+docker run -d \
+  --name revive-web \
+  --network revive-net \
+  -p 8080:80 \
+  -v revive-var:/var/www/html/var \
+  --env REVIVE_REDIS_HOST=revive-redis \
+  --env REVIVE_REDIS_PORT=6379 \
+  --env REVIVE_REDIS_TIMEOUT=1.0 \
+  --env REVIVE_REDIS_DATABASE=0 \
+  --env REVIVE_REDIS_PERSISTENT=0 \
+  --env REVIVE_REDIS_IGBINARY=0 \
+  revive-adserver:latest
+```
+
+The container enforces `deliveryCacheStore:apRedis:apRedis` for runtime config files, so the Redis Caching plugin must be installed in Revive.
+
 ## Cluster mode
 
 For multiple web servers behind a load balancer, use the same image on every node and keep the database shared. Do not rely on the default file delivery cache, because it is node-local.
