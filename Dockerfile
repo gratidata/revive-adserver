@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.6
 FROM php:8.1-apache
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
@@ -31,14 +32,15 @@ WORKDIR /var/www/html
 
 COPY . /var/www/html
 
-ARG APREDIS_PLUGIN_URL
 ARG APREDIS_PLUGIN_SHA256=""
 
-RUN set -eux; \
-    if [ -z "${APREDIS_PLUGIN_URL}" ]; then \
-      echo "ERROR: APREDIS_PLUGIN_URL build arg is required to enforce Redis cache support."; \
+RUN --mount=type=secret,id=apredis_plugin_url \
+    set -eux; \
+    if [ ! -f /run/secrets/apredis_plugin_url ]; then \
+      echo "ERROR: Docker build secret 'apredis_plugin_url' is required to enforce Redis cache support." >&2; \
       exit 1; \
     fi; \
+    APREDIS_PLUGIN_URL="$(cat /run/secrets/apredis_plugin_url)"; \
     tmp_zip="$(mktemp /tmp/apredis.XXXXXX.zip)"; \
     tmp_dir="$(mktemp -d /tmp/apredis.XXXXXX)"; \
     curl -fsSL "${APREDIS_PLUGIN_URL}" -o "${tmp_zip}"; \
@@ -46,17 +48,12 @@ RUN set -eux; \
       echo "${APREDIS_PLUGIN_SHA256}  ${tmp_zip}" | sha256sum -c -; \
     fi; \
     unzip -q "${tmp_zip}" -d "${tmp_dir}"; \
-    plugin_src=""; \
-    for candidate in "${tmp_dir}" "${tmp_dir}/apRedis" "${tmp_dir}/plugins/deliveryCacheStore/apRedis"; do \
-      if [ -f "${candidate}/apRedis.class.php" ]; then \
-        plugin_src="${candidate}"; \
-        break; \
-      fi; \
-    done; \
-    if [ -z "${plugin_src}" ]; then \
-      echo "ERROR: apRedis.class.php not found in downloaded plugin package."; \
+    plugin_file="$(find "${tmp_dir}" -type f -name apRedis.class.php -print -quit)"; \
+    if [ -z "${plugin_file}" ]; then \
+      echo "ERROR: apRedis.class.php not found in downloaded plugin package." >&2; \
       exit 1; \
     fi; \
+    plugin_src="$(dirname "${plugin_file}")"; \
     mkdir -p /var/www/html/plugins/deliveryCacheStore/apRedis; \
     cp -R "${plugin_src}"/. /var/www/html/plugins/deliveryCacheStore/apRedis/; \
     test -f /var/www/html/plugins/deliveryCacheStore/apRedis/apRedis.class.php; \

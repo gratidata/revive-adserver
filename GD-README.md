@@ -4,13 +4,14 @@ This repository can run in a standard Apache/PHP container. The image below uses
 
 ## Build the image
 
-Provide a direct download URL for the Redis Caching plugin ZIP (for example, a signed vendor URL), then build:
+Provide a direct download URL for the Redis Caching plugin ZIP, save it to a local file, then build:
 
 ```bash
 export APREDIS_PLUGIN_URL="https://example.com/path/to/apRedis.zip"
+printf '%s' "${APREDIS_PLUGIN_URL}" > /tmp/apredis_plugin_url.txt
 
 docker build \
-  --build-arg APREDIS_PLUGIN_URL="${APREDIS_PLUGIN_URL}" \
+  --secret id=apredis_plugin_url,src=/tmp/apredis_plugin_url.txt \
   -t revive-adserver:latest .
 ```
 
@@ -18,7 +19,7 @@ Optional integrity check:
 
 ```bash
 docker build \
-  --build-arg APREDIS_PLUGIN_URL="${APREDIS_PLUGIN_URL}" \
+  --secret id=apredis_plugin_url,src=/tmp/apredis_plugin_url.txt \
   --build-arg APREDIS_PLUGIN_SHA256="<sha256-of-zip>" \
   -t revive-adserver:latest .
 ```
