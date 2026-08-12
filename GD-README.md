@@ -4,8 +4,23 @@ This repository can run in a standard Apache/PHP container. The image below uses
 
 ## Build the image
 
+Provide a direct download URL for the Redis Caching plugin ZIP (for example, a signed vendor URL), then build:
+
 ```bash
-docker build -t revive-adserver:latest .
+export APREDIS_PLUGIN_URL="https://example.com/path/to/apRedis.zip"
+
+docker build \
+  --build-arg APREDIS_PLUGIN_URL="${APREDIS_PLUGIN_URL}" \
+  -t revive-adserver:latest .
+```
+
+Optional integrity check:
+
+```bash
+docker build \
+  --build-arg APREDIS_PLUGIN_URL="${APREDIS_PLUGIN_URL}" \
+  --build-arg APREDIS_PLUGIN_SHA256="<sha256-of-zip>" \
+  -t revive-adserver:latest .
 ```
 
 ## Run the supporting services
@@ -77,18 +92,17 @@ docker run -d \
   revive-adserver:latest
 ```
 
-The container enforces `deliveryCacheStore:apRedis:apRedis` for runtime config files and exits with an error when the Redis Caching plugin is missing.
-Install the plugin first so this file exists:
+The image build installs the Redis Caching plugin into:
 
 `/var/www/html/plugins/deliveryCacheStore/apRedis/apRedis.class.php`
+
+The container then enforces `deliveryCacheStore:apRedis:apRedis` for runtime config files.
 
 ## Cluster mode
 
 For multiple web servers behind a load balancer, use the same image on every node and keep the database shared. Do not rely on the default file delivery cache, because it is node-local.
 
-After installation, install the Redis Caching plugin from https://www.adserverplugins.com/redis-caching-plugin/ and switch the delivery cache to Redis.
-
-Then configure the cache store plugin and Redis connection in your generated configuration file (`var/your-hostname.conf.php`):
+After installation, the entrypoint will set the cache store plugin and Redis connection in your generated configuration file (`var/your-hostname.conf.php`):
 
 ```ini
 [delivery]
