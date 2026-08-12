@@ -130,7 +130,7 @@ video                               = false
 
 [delivery]
 cacheExpire                         = 1200
-cacheStorePlugin              	    = deliveryCacheStore:apRedis:apRedis
+cacheStorePlugin              	    = deliveryCacheStore:oxCacheFile:oxCacheFile
 cachePath                           =
 acls                                = true
 aclsDirectSelection                 = true

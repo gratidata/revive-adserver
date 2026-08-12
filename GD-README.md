@@ -77,7 +77,10 @@ docker run -d \
   revive-adserver:latest
 ```
 
-The container enforces `deliveryCacheStore:apRedis:apRedis` for runtime config files, so the Redis Caching plugin must be installed in Revive.
+The container enforces `deliveryCacheStore:apRedis:apRedis` for runtime config files and exits with an error when the Redis Caching plugin is missing.
+Install the plugin first so this file exists:
+
+`/var/www/html/plugins/deliveryCacheStore/apRedis/apRedis.class.php`
 
 ## Cluster mode
 

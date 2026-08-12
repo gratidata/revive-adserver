@@ -64,6 +64,11 @@ set_ini_value() {
   mv "$tmp_file" "$file"
 }
 
+is_apredis_plugin_installed() {
+  [ -f /var/www/html/plugins/deliveryCacheStore/apRedis/apRedis.class.php ] \
+    || [ -f /var/www/html/var/plugins/deliveryCacheStore/apRedis/apRedis.class.php ]
+}
+
 apply_redis_env_config() {
   redis_host="${REVIVE_REDIS_HOST:-revive-redis}"
   redis_port="${REVIVE_REDIS_PORT:-6379}"
@@ -80,6 +85,12 @@ apply_redis_env_config() {
     fi
 
     found_conf=1
+
+    if ! is_apredis_plugin_installed; then
+      echo "ERROR: Redis cache is required, but apRedis plugin is not installed." >&2
+      echo "Install the Redis Caching plugin so /plugins/deliveryCacheStore/apRedis/apRedis.class.php exists." >&2
+      exit 1
+    fi
 
     set_ini_value "$conf_file" "delivery" "cacheStorePlugin" "deliveryCacheStore:apRedis:apRedis"
 
