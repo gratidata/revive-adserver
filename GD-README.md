@@ -117,15 +117,25 @@ Expected output includes:
 - `[apRedis]`
 - `host = revive-redis` (or your configured Redis host)
 
-2. Verify the Redis container is responding:
+2. Verify Revive is issuing Redis cache commands:
 
 ```bash
-docker exec revive-redis redis-cli PING
+docker exec revive-redis redis-cli CONFIG RESETSTAT
+
+# Trigger delivery traffic (use a real delivery URL from your setup).
+for i in $(seq 1 20); do
+  curl -fsS "http://localhost:8080/www/delivery/avw.php?zoneid=1&cb=${RANDOM}" >/dev/null || true
+done
+
+docker exec revive-redis redis-cli INFO commandstats | \
+  grep -E 'cmdstat_(get|set|setex|del|expire)'
 ```
 
-Expected output:
+Expected output includes one or more non-zero `cmdstat_*` counters (for example
+`cmdstat_get`, `cmdstat_setex`, or `cmdstat_expire`) after traffic is sent.
 
-`PONG`
+That confirms Revive is actively using Redis for delivery cache operations, not
+just that Redis is reachable.
 
 ## Cluster mode
 
