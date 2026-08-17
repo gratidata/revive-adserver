@@ -137,6 +137,10 @@ Expected output includes one or more non-zero `cmdstat_*` counters (for example
 That confirms Revive is actively using Redis for delivery cache operations, not
 just that Redis is reachable.
 
+If no `cmdstat_*` counters increase, verify the delivery URL is valid for your
+installation and re-check that `cacheStorePlugin = deliveryCacheStore:apRedis:apRedis`
+is present in the active `var/*.conf.php` file.
+
 ## Cluster mode
 
 For multiple web servers behind a load balancer, use the same image on every node and keep the database shared. Do not rely on the default file delivery cache, because it is node-local.
