@@ -99,6 +99,34 @@ The image build installs the Redis Caching plugin into:
 
 The container then enforces `deliveryCacheStore:apRedis:apRedis` for runtime config files.
 
+## Verify Redis caching is active
+
+1. Verify the running web container config is set to apRedis:
+
+```bash
+docker exec revive-web sh -lc '
+  conf_file="$(ls /var/www/html/var/*.conf.php | head -n1)" &&
+  echo "Using config: ${conf_file}" &&
+  grep -E "cacheStorePlugin|^\[apRedis\]|host[[:space:]]*=" "${conf_file}"
+'
+```
+
+Expected output includes:
+
+- `cacheStorePlugin = deliveryCacheStore:apRedis:apRedis`
+- `[apRedis]`
+- `host = revive-redis` (or your configured Redis host)
+
+2. Verify Redis is reachable from the running Redis container:
+
+```bash
+docker exec revive-redis redis-cli PING
+```
+
+Expected output:
+
+`PONG`
+
 ## Cluster mode
 
 For multiple web servers behind a load balancer, use the same image on every node and keep the database shared. Do not rely on the default file delivery cache, because it is node-local.
