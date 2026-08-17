@@ -117,7 +117,7 @@ Expected output includes:
 - `[apRedis]`
 - `host = revive-redis` (or your configured Redis host)
 
-2. Verify Redis is reachable from the running Redis container:
+2. Verify the Redis container is responding:
 
 ```bash
 docker exec revive-redis redis-cli PING
