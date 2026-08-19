@@ -7,7 +7,7 @@ This repository can run in a standard Apache/PHP container. The image below uses
 Provide a direct download URL for the Redis Caching plugin ZIP, save it to a local file, then build:
 
 ```bash
-export APREDIS_PLUGIN_URL="https://example.com/path/to/apRedis.zip"
+export APREDIS_PLUGIN_URL="https://codeload.github.com/adserverplugins/apDeliveryCacheRedis/zip/refs/tags/v1.4.0"
 printf '%s' "${APREDIS_PLUGIN_URL}" > /tmp/apredis_plugin_url.txt
 
 docker build \
