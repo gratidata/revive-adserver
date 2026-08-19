@@ -48,15 +48,23 @@ RUN --mount=type=secret,id=apredis_plugin_url \
       echo "${APREDIS_PLUGIN_SHA256}  ${tmp_zip}" | sha256sum -c -; \
     fi; \
     unzip -q "${tmp_zip}" -d "${tmp_dir}"; \
-    plugin_file="$(find "${tmp_dir}" -type f -name apRedis.class.php -print -quit)"; \
-    if [ -z "${plugin_file}" ]; then \
+    cache_store_file="$(find "${tmp_dir}" -type f -name apRedis.class.php -print -quit)"; \
+    if [ -z "${cache_store_file}" ]; then \
       echo "ERROR: apRedis.class.php not found in downloaded plugin package." >&2; \
       exit 1; \
     fi; \
-    plugin_src="$(dirname "${plugin_file}")"; \
-    mkdir -p /var/www/html/plugins/deliveryCacheStore/apRedis; \
-    cp -R "${plugin_src}"/. /var/www/html/plugins/deliveryCacheStore/apRedis/; \
+    redis_lib_file="$(find "${tmp_dir}" -type f -path '*/apRedis/Redis.php' -print -quit)"; \
+    if [ -z "${redis_lib_file}" ]; then \
+      echo "ERROR: apRedis/Redis.php not found in downloaded plugin package." >&2; \
+      exit 1; \
+    fi; \
+    cache_store_src="$(dirname "${cache_store_file}")"; \
+    redis_lib_src="$(dirname "${redis_lib_file}")"; \
+    mkdir -p /var/www/html/plugins/deliveryCacheStore/apRedis /var/www/html/plugins/apRedis; \
+    cp -R "${cache_store_src}"/. /var/www/html/plugins/deliveryCacheStore/apRedis/; \
+    cp -R "${redis_lib_src}"/. /var/www/html/plugins/apRedis/; \
     test -f /var/www/html/plugins/deliveryCacheStore/apRedis/apRedis.class.php; \
+    test -f /var/www/html/plugins/apRedis/Redis.php; \
     rm -rf "${tmp_zip}" "${tmp_dir}"
 
 RUN composer install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader \
