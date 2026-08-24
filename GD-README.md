@@ -8,6 +8,14 @@ This repository can run in a standard Apache/PHP container. The image below uses
 docker build -t revive-adserver:latest .
 ```
 
+to push to GitHub packages: 
+
+```bash
+docker tag revive-adserver:latest ghcr.io/gratidata/revive-server:latest
+docker push ghcr.io/gratidata/revive-server:latest
+```
+
+
 ## Run the supporting services
 
 Revive Adserver needs a database, and for clustered delivery cache it should also use Memcached instead of the default file cache.
@@ -26,9 +34,9 @@ docker run -d \
   mariadb:11
 
 docker run -d \
-  --name revive-memcached \
+  --name revive-redis \
   --network revive-net \
-  memcached:1.6-alpine
+  redis:7-alpine
 ```
 
 ## Start Revive Adserver
