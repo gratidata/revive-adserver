@@ -304,6 +304,7 @@ class MAX_Admin_Invocation
             $invocationTags = OX_Component::getComponents('invocationTags');
 
             $allowed = [];
+            $aOrderedComponents = [];
             foreach ($invocationTags as $pluginKey => $invocationTag) {
                 if ($invocationTag->isAllowed($extra)) {
                     $aOrderedComponents[$invocationTag->getOrder()] =
