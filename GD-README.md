@@ -15,6 +15,13 @@ docker build \
   -t revive-adserver:latest .
 ```
 
+To push to our GitHub repo: 
+
+```
+docker tag revive-adserver:latest ghcr.io/gratidata/revive-server:latest
+docker push ghcr.io/gratidata/revive-server:latest
+```
+
 Optional integrity check:
 
 ```bash
