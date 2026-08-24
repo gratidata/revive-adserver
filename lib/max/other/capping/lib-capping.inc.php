@@ -13,11 +13,6 @@
 // Required files
 require_once MAX_PATH . '/lib/max/other/lib-io.inc.php';
 
-// #1088 redundant code refactor
-//  phpAds_registerGlobal is a wrapper function for MAX_commonRegisterGlobalsArray($args);
-//  *technically* deprecated
-phpAds_registerGlobal('cap', 'session_capping', 'time');
-
 /**
  * A function to initialise capping variables for ad, campaign or zone capping.
  *

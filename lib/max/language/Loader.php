@@ -25,6 +25,8 @@ require_once MAX_PATH . '/lib/RV/Admin/Languages.php';
  */
 class Language_Loader
 {
+    private static array $aLastLoaded = [];
+
     /**
      * The method to load the selected language file.
      *
@@ -49,26 +51,16 @@ class Language_Loader
             $lang = $aPref['language'];
         }
 
-        $PRODUCT_NAME = PRODUCT_NAME;
-        $PRODUCT_URL = PRODUCT_URL;
-        $PRODUCT_DOCSURL = PRODUCT_DOCSURL;
-        $phpAds_dbmsname = phpAds_dbmsname;
-
         // Always load the English language, in case of incomplete translations
-        if (file_exists(MAX_PATH . '/lib/max/language/en/' . $section . '.lang.php')) {
-            include MAX_PATH . '/lib/max/language/en/' . $section . '.lang.php';
-        } else {
-            return; // Wrong section
+        if (!self::loadLanguage($section, 'en')) {
+            return;
         }
+
         // Load the language from preferences, if possible, otherwise load
         // the global preference, if possible
         // If language preference is set, do not load language from config file (common bug here is to check if prefereced language is 'en'!)
-        if (!empty($lang)
-            && file_exists(MAX_PATH . '/lib/max/language/' . $lang . '/' . $section . '.lang.php')) {
-            // Now check if is need to load language (english is loaded)
-            if ($lang != 'en') {
-                include MAX_PATH . '/lib/max/language/' . $lang . '/' . $section . '.lang.php';
-            }
+        if (!empty($lang) && preg_match('#^[a-z][a-z](_[A-Z][A-Z])?$#', $lang)) {
+            self::loadLanguage($section, $lang);
         } else {
             // Check if using full language name (polish), if so then set to use two letter abbr (pl).
             if (!empty($aConf['max']['language'])) {
@@ -78,11 +70,33 @@ class Language_Loader
                 }
             }
 
-            if (!empty($confMaxLanguage) && $confMaxLanguage != 'en'
-                && file_exists(MAX_PATH . '/lib/max/language/' . $confMaxLanguage . '/' . $section . '.lang.php')) {
-                include MAX_PATH . '/lib/max/language/' . $confMaxLanguage .
-                    '/' . $section . '.lang.php';
+            if (!empty($confMaxLanguage)) {
+                self::loadLanguage($section, $confMaxLanguage);
             }
         }
+    }
+
+    private static function loadLanguage($section, $lang): bool
+    {
+        if ($lang === (self::$aLastLoaded[$section] ?? null)) {
+            return true;
+        }
+
+        $path = MAX_PATH . '/lib/max/language/' . $lang . '/' . $section . '.lang.php';
+
+        if (!file_exists($path)) {
+            return false;
+        }
+
+        $PRODUCT_NAME = PRODUCT_NAME;
+        $PRODUCT_URL = PRODUCT_URL;
+        $PRODUCT_DOCSURL = PRODUCT_DOCSURL;
+        $phpAds_dbmsname = phpAds_dbmsname;
+
+        include $path;
+
+        self::$aLastLoaded[$section] = $lang;
+
+        return true;
     }
 }

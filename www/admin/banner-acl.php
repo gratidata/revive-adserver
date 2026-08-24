@@ -47,8 +47,11 @@ $aEntities = ['clientid' => $clientid, 'campaignid' => $campaignid, 'bannerid' =
 
 $acl = MAX_AclsRemap($acl ?? []);
 
-// Clean up and initialise block/capping variables
-$block = _initCappingVariables($time, $cap, $session_capping);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Clean up and initialise block/capping variables
+    phpAds_registerGlobal('cap', 'session_capping', 'time');
+    $block = _initCappingVariables($time, $cap, $session_capping);
+}
 
 if (!empty($action)) {
     $acl = MAX_AclAdjust($acl, $action);

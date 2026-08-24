@@ -961,7 +961,7 @@ class Admin_DA
         //  return false if banner is not allowed to be linked to selected zone type
         if ((($aZone['type'] != MAX_ZoneEmail) && !in_array($bannerType, $aAllowedBannerType)) ||
            (($aZone['type'] == MAX_ZoneEmail) && (!in_array($bannerType, $aAllowedBannerType) || !in_array($contentType, $aAllowedContentType)))) {
-            return PEAR::raiseError('This banner is the wrong type for this zone - <a href="zone-edit.php?affiliateid=' . $aZone['publisher_id'] . '&zoneid=' . $aZone['zone_id'] . '">' . $aZone['name'] . '</a>', MAX_ERROR_INVALIDBANNERTYPE);
+            return PEAR::raiseError('This banner is the wrong type for this zone - <a href="zone-edit.php?affiliateid=' . $aZone['publisher_id'] . '&zoneid=' . $aZone['zone_id'] . '">' . htmlspecialchars($aZone['name']) . '</a>', MAX_ERROR_INVALIDBANNERTYPE);
         }
         return true;
     }

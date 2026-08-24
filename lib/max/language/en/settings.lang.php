@@ -78,6 +78,7 @@ $GLOBALS['strEnableDashboard'] = "Enable dashboard";
 $GLOBALS['strEnableDashboardSyncNotice'] = "Please enable <a href='account-settings-update.php'>check for updates</a> to use the dashboard.";
 $GLOBALS['strTimezone'] = "Timezone";
 $GLOBALS['strEnableAutoMaintenance'] = "Automatically perform maintenance during delivery if scheduled maintenance is not set up";
+$GLOBALS['strInvalidLanguage'] = "Invalid language";
 
 // Database Settings
 $GLOBALS['strDatabaseSettings'] = "Database Settings";

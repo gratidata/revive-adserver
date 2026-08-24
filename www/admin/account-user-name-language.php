@@ -30,6 +30,8 @@ OA_Permission::enforceAccount(OA_ACCOUNT_ADMIN, OA_ACCOUNT_MANAGER, OA_ACCOUNT_A
 $oOptions = new OA_Admin_Option('user');
 $prefSection = "name-language";
 
+// Preload available languages
+$aAvailableLanguages = RV_Admin_Languages::getAvailableLanguages();
 
 // Prepare an array for storing error messages
 $aErrormessage = [];
@@ -55,7 +57,11 @@ if (isset($_POST['submitok']) && $_POST['submitok'] == 'true') {
         $doUsers->contact_name = $contact_name;
     }
     if (isset($language)) {
-        $doUsers->language = $language;
+        if (isset($aAvailableLanguages[$language])) {
+            $doUsers->language = $language;
+        } else {
+            $aErrormessage[1][] = $strInvalidLanguage;
+        }
     }
 
     if ($aErrormessage === []) {
@@ -162,7 +168,7 @@ $aSettings = [
                 'type' => 'select',
                 'name' => 'language',
                 'text' => $strLanguage,
-                'items' => RV_Admin_Languages::getAvailableLanguages(),
+                'items' => $aAvailableLanguages,
                 'value' => $GLOBALS['_MAX']['PREF']['language'],
             ],
         ],
