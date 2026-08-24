@@ -138,6 +138,15 @@ clickUrlValidity                    = 0;    ; Click URL open redirect validity i
 relAttribute                        = noopener nofollow
 relPreconnect                       = false
 
+[apRedis]
+host                                = localhost
+port                                = 6379
+timeout                             = 1.0
+database                            = 0
+persistent                          = 0
+igbinary                            = 0
+socket                              =
+
 [defaultBanner]
 invalidZoneHtmlBanner               =       ; If zone does not exist, show this HTML snipper
 suspendedAccountHtmlBanner          =       ; If account is suspended, show this HTML snippet
